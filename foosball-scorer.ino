@@ -1,6 +1,6 @@
 /*
   Foosball scorer
-
+  Author: Bren Murrell
 */
 
 #define led1 13
