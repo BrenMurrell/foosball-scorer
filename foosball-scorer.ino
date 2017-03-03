@@ -30,15 +30,12 @@ void setup() {
 void loop() {
   //long duration;
   digitalWrite(trigPinBlue, LOW);
-  
   delay(2);
   digitalWrite(trigPinBlue, HIGH);
-  
   delay(10);
   digitalWrite(trigPinBlue, LOW);
   
   durationBlue = pulseIn(echoPinBlue, HIGH);
-  
   digitalWrite(trigPinRed, LOW);
   delay(2);
   digitalWrite(trigPinRed, HIGH);
@@ -73,7 +70,7 @@ void loop() {
       Serial.println("--- Ball released ---");
     }
     justScored = false;
-    loopDelay = 5;
+    loopDelay = 0;
   }
   
 
