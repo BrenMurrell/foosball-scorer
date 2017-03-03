@@ -3,24 +3,25 @@
   Author: Bren Murrell
 */
 
-#define led1 13
-#define led2 12
-#define trigPin 11
-#define echoPin 10
-long duration = 0;
-long distance = 0;
+#define trigPinBlue 11
+#define echoPinBlue 10
+#define trigPinRed 5
+#define echoPinRed 6
+long durationBlue = 4000;
+long durationRed = 4000;
 bool justScored = false;
 bool gameOver = false;
-int score = 0;
+int scoreBlue = 0;
+int scoreRed = 0;
 int loopDelay = 5;
 // the setup function runs once when you press reset or power the board
 void setup() {
-  
+
   // initialize digital pin LED_BUILTIN as an output.
-  pinMode(led1, OUTPUT);
-  pinMode(led2, OUTPUT);
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
+  pinMode(trigPinRed, OUTPUT);
+  pinMode(echoPinRed, INPUT);
+  pinMode(trigPinBlue, OUTPUT);
+  pinMode(echoPinBlue, INPUT);
   Serial.begin(9600);
   Serial.println("--- Start Serial Monitor SEND_RCVE ---");
 }
@@ -28,37 +29,55 @@ void setup() {
 // the loop function runs over and over again forever
 void loop() {
   //long duration;
-  digitalWrite(trigPin, LOW);  // Added this line
-  delayMicroseconds(2); // Added this line
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10); // Added this line
-  digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH);
-  distance = ((duration/2) / 29.1 );
-  if (duration < 400) {  // This is where the LED On/Off happens
-    digitalWrite(led1,HIGH); // When the Red condition is met, the Green LED should turn off
-    digitalWrite(led2,LOW);
+  digitalWrite(trigPinBlue, LOW);
+  
+  delay(2);
+  digitalWrite(trigPinBlue, HIGH);
+  
+  delay(10);
+  digitalWrite(trigPinBlue, LOW);
+  
+  durationBlue = pulseIn(echoPinBlue, HIGH);
+  
+  digitalWrite(trigPinRed, LOW);
+  delay(2);
+  digitalWrite(trigPinRed, HIGH);
+  delay(10);
+  digitalWrite(trigPinRed, LOW);
+
+  
+  durationRed = pulseIn(echoPinRed, HIGH);
+//  Serial.println(durationBlue);
+//  Serial.println(durationRed);
+//  Serial.println(loopDelay);
+//  Serial.println("--- done ---");
+  if (durationBlue < 400 || durationRed < 400) {  // This is where the LED On/Off happens
     loopDelay = 4000;
     if(justScored == false) {
-      score = score + 1;
-      if(score >= 10) {
-        Serial.println("--- Someone just won ---"); 
-        score = 10;
-        gameOver = true;
+      if(durationBlue < 400) {
+        scoreBlue = scoreBlue + 1;
+        Serial.println("--- Blue Scored! ---");
       } else {
-        Serial.println(score);
+        scoreRed = scoreRed + 1;
+        Serial.println("--- Red Scored! ---");
       }
-    }
+      //Serial.println("--- Blue ---");
+      Serial.println(scoreBlue);
+      //Serial.println("--- Red ---");
+      Serial.println(scoreRed);
+    } 
     justScored = true;
-    
   }
   else {
-    digitalWrite(led1,LOW);
-    digitalWrite(led2,HIGH);
+    if(justScored == true) {
+      Serial.println("--- Ball released ---");
+    }
     justScored = false;
     loopDelay = 5;
   }
+  
 
   delay(loopDelay);   // wait for a second
   
 }
+
