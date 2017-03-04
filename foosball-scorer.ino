@@ -3,8 +3,8 @@
   Author: Bren Murrell
 */
 
-#define trigPinBlue 11
-#define echoPinBlue 10
+#define trigPinBlue 3
+#define echoPinBlue 4
 #define trigPinRed 5
 #define echoPinRed 6
 long durationBlue = 4000;
