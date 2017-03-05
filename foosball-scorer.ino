@@ -2,11 +2,13 @@
   Foosball scorer
   Author: Bren Murrell
 */
-
-#define trigPinBlue 3
-#define echoPinBlue 4
-#define trigPinRed 5
-#define echoPinRed 6
+int dataPinRed = 12;
+int latchPinRed = 11;
+int clockPinRed = 13;
+#define trigPinBlue 7
+#define echoPinBlue 8
+#define trigPinRed 9
+#define echoPinRed 10
 long durationBlue = 4000;
 long durationRed = 4000;
 bool justScored = false;
@@ -14,6 +16,9 @@ bool gameOver = false;
 int scoreBlue = 0;
 int scoreRed = 0;
 int loopDelay = 5;
+int seq[14] = {0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F};
+
+
 // the setup function runs once when you press reset or power the board
 void setup() {
 
@@ -22,13 +27,21 @@ void setup() {
   pinMode(echoPinRed, INPUT);
   pinMode(trigPinBlue, OUTPUT);
   pinMode(echoPinBlue, INPUT);
+  pinMode(dataPinRed, OUTPUT);
+  pinMode(latchPinRed, OUTPUT);
+  pinMode(clockPinRed, OUTPUT);
   Serial.begin(9600);
-  Serial.println("--- Start Serial Monitor SEND_RCVE ---");
+  Serial.println("--- Start Serial Monitor SEND_RCVE ---");  
+  digitalWrite(latchPinRed, LOW);
+  shiftOut(dataPinRed, clockPinRed, MSBFIRST, seq[scoreRed]);
+  digitalWrite(latchPinRed, HIGH);
 }
 
 // the loop function runs over and over again forever
 void loop() {
   //long duration;
+  
+  delay(10);
   digitalWrite(trigPinBlue, LOW);
   delay(2);
   digitalWrite(trigPinBlue, HIGH);
@@ -44,8 +57,8 @@ void loop() {
 
   
   durationRed = pulseIn(echoPinRed, HIGH);
-//  Serial.println(durationBlue);
-//  Serial.println(durationRed);
+  //Serial.println(durationBlue);
+  //Serial.println(durationRed);
 //  Serial.println(loopDelay);
 //  Serial.println("--- done ---");
   if (durationBlue < 400 || durationRed < 400) {  // This is where the LED On/Off happens
@@ -57,11 +70,16 @@ void loop() {
       } else {
         scoreRed = scoreRed + 1;
         Serial.println("--- Red Scored! ---");
+        digitalWrite(latchPinRed, LOW);
+        shiftOut(dataPinRed, clockPinRed, MSBFIRST, seq[scoreRed]);
+        digitalWrite(latchPinRed, HIGH);
+        
       }
       //Serial.println("--- Blue ---");
       Serial.println(scoreBlue);
       //Serial.println("--- Red ---");
       Serial.println(scoreRed);
+      
     } 
     justScored = true;
   }
@@ -73,7 +91,6 @@ void loop() {
     loopDelay = 0;
   }
   
-
   delay(loopDelay);   // wait for a second
   
 }
