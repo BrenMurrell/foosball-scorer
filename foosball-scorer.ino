@@ -5,10 +5,15 @@
 int dataPinRed = 12;
 int latchPinRed = 11;
 int clockPinRed = 13;
-#define trigPinBlue 7
-#define echoPinBlue 8
-#define trigPinRed 9
-#define echoPinRed 10
+int dataPinBlue = 9;
+int latchPinBlue = 8;
+int clockPinBlue = 10;
+
+#define trigPinBlue 6
+#define echoPinBlue 7
+#define trigPinRed 4
+#define echoPinRed 5
+
 long durationBlue = 4000;
 long durationRed = 4000;
 bool justScored = false;
@@ -30,11 +35,17 @@ void setup() {
   pinMode(dataPinRed, OUTPUT);
   pinMode(latchPinRed, OUTPUT);
   pinMode(clockPinRed, OUTPUT);
+  pinMode(dataPinBlue, OUTPUT);
+  pinMode(latchPinBlue, OUTPUT);
+  pinMode(clockPinBlue, OUTPUT);
   Serial.begin(9600);
   Serial.println("--- Start Serial Monitor SEND_RCVE ---");  
   digitalWrite(latchPinRed, LOW);
   shiftOut(dataPinRed, clockPinRed, MSBFIRST, seq[scoreRed]);
   digitalWrite(latchPinRed, HIGH);
+  digitalWrite(latchPinBlue, LOW);
+  shiftOut(dataPinBlue, clockPinBlue, MSBFIRST, seq[scoreBlue]);
+  digitalWrite(latchPinBlue, HIGH);
 }
 
 // the loop function runs over and over again forever
@@ -47,16 +58,15 @@ void loop() {
   digitalWrite(trigPinBlue, HIGH);
   delay(10);
   digitalWrite(trigPinBlue, LOW);
-  
   durationBlue = pulseIn(echoPinBlue, HIGH);
+  
   digitalWrite(trigPinRed, LOW);
   delay(2);
   digitalWrite(trigPinRed, HIGH);
   delay(10);
   digitalWrite(trigPinRed, LOW);
-
-  
   durationRed = pulseIn(echoPinRed, HIGH);
+  
   //Serial.println(durationBlue);
   //Serial.println(durationRed);
 //  Serial.println(loopDelay);
@@ -67,6 +77,10 @@ void loop() {
       if(durationBlue < 400) {
         scoreBlue = scoreBlue + 1;
         Serial.println("--- Blue Scored! ---");
+        digitalWrite(latchPinBlue, LOW);
+        shiftOut(dataPinBlue, clockPinBlue, MSBFIRST, seq[scoreBlue]);
+        digitalWrite(latchPinBlue, HIGH);
+        
       } else {
         scoreRed = scoreRed + 1;
         Serial.println("--- Red Scored! ---");
@@ -89,7 +103,7 @@ void loop() {
     }
     justScored = false;
     loopDelay = 0;
-  }
+  } 
   
   delay(loopDelay);   // wait for a second
   
